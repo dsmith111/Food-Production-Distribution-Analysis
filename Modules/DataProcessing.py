@@ -2,7 +2,7 @@ from sklearn.tree._tree import TREE_LEAF;
 from sklearn import tree as treeDep;
 import pandas as pd;
 import numpy as np;
-
+from copy import deepcopy;
 
 class DataProcessing():
 
@@ -47,7 +47,7 @@ class DataProcessing():
 
 
         key_df = full_data_frame[full_data_frame[column_name]==country]
-        temp_dict = copy.deepcopy(cereal_dictionary)
+        temp_dict = deepcopy(cereal_dictionary)
 
         for cereal in cereal_dictionary.keys():
 
@@ -85,8 +85,8 @@ class DataProcessing():
             inner_tree.children_right[index] = TREE_LEAF
         # if there are children, visit them as well
         if inner_tree.children_left[index] != TREE_LEAF:
-            prune_index(inner_tree, inner_tree.children_left[index], threshold)
-            prune_index(inner_tree, inner_tree.children_right[index], threshold)
+            DataProcessing.prune_index(inner_tree, inner_tree.children_left[index], threshold)
+            DataProcessing.prune_index(inner_tree, inner_tree.children_right[index], threshold)
 
 
 
