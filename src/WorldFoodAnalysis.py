@@ -1,5 +1,4 @@
 from sklearn.naive_bayes import GaussianNB
-from sklearn.naive_bayes import MultinomialNB
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -82,8 +81,8 @@ reg.fit(x_train, y_train)
 errRateTrain = reg.score(x_train, y_train)
 errRateTest = reg.score(x_test, y_test)
 
-print("Error on training {:.3f}".format(errRateTrain))
-print("Error on testing {:.3f}\n".format(errRateTest))
+print("Accuracy on training {:.3f}".format(errRateTrain))
+print("Accuracy on testing {:.3f}\n".format(errRateTest))
 
 x = np.array(list(map(lambda num: num+2013, range(2020-2014))))
 y = reg.predict(
@@ -113,7 +112,10 @@ y_predict = DataProcessing.predict(w_poly, a_temp)
 print("Predicted Poly")
 print(y_predict/saved_scale)
 plt.plot(x_pred, y_predict/saved_scale)
-
+plt.title("Polynomial Prediction")
+plt.xlabel("Years")
+plt.ylabel("Production (1000 tonnes)")
+plt.show()
 print("Scale is {}\n".format(saved_scale))
 print("2013 Predicted Amount:")
 print(reg.predict(np.array([2013]).reshape(-1, 1))[0][0]/saved_scale)
@@ -398,8 +400,8 @@ std_FAO = deepcopy(parallel_FAO)
 
 for cereal in xTicks[0:len(xTicks)-1]:
     x_scaled = scaler.fit(std_FAO[cereal].values.reshape(-1, 1))
-    std_FAO = std_FAO[np.array(list(map(lambda elem: elem <= (
-        1*x_scaled.scale_), std_FAO[cereal].values))).reshape(-1, 1)]
+    std_FAO = std_FAO[np.array(list(map(lambda elem: elem < (
+        1.5*x_scaled.scale_), std_FAO[cereal].values))).reshape(-1, 1)]
 
 
 print("Std Table \n")
@@ -580,7 +582,7 @@ x_train, x_test, y_train, y_test = train_test_split(temp.drop(
 
 # K-nearest Neighbor
 
-iterations = 8
+iterations = 55
 training_accuracy = []
 testing_accuracy = []
 
@@ -710,12 +712,15 @@ for i in range(len(mds_array)):
     testing_accuracy.append(mdl.score(x_test, y_test))
 
     if i == 0:
+        maxIndex = i
         continue
-    if mdl.score(x_test, y_test) > max(testing_accuracy[:i]):
+
+    if (mdl.score(x_test, y_test)+mdl.score(x_train, y_train))/2 > ((testing_accuracy[maxIndex])+(training_accuracy[maxIndex]))/2:
         print("Naive Bayes\n Distribution {}".format(i+1))
         print("Accuracy on training {:.3f}".format(
             mdl.score(x_train, y_train)))
         print("Accuracy on testing {:.3f}".format(mdl.score(x_test, y_test)))
+        maxIndex = i
         savedx1 = df1
         savedx2 = df2
 
